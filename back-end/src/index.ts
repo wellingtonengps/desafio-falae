@@ -15,16 +15,40 @@ app.get('/', (_,res: Response) => {
     res.send('server running...')
 });
 
-app.post('/api/auth/register',() => {
+app.post('/api/auth/register', async (req, res) => {
 
+    const {name, email, address, phone } = req.body
+
+    const user = await prisma.post.create({
+        data: {
+            name,
+            email,
+            address,
+            phone
+        }
+    })
+
+    res.json(user)
 })
 
-app.post('/api/products',() => {
+app.post('/api/products',async (req, res) => {
 
+    const {name, price, category, description, imageUrl} = req.body
+
+    const product = await prisma.post.create({
+        data: {
+            name, price, category, description, imageUrl
+        }
+    })
+
+    res.json(product)
 })
 
-app.get('/api/products',() => {
+app.get('/api/products', async (req, res) => {
 
+    const products = await prisma.products.findMany({
+
+    })
 })
 
 app.get('/api/products/:id',() => {
