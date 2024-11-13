@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="9c74c4ee-0d61-4e04-969c-27c663733660" name="Changes" comment="connect db">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back-end/prisma/migrations/20241113010132_init/migration.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back-end/prisma/migrations/20241113012346_ajuste_phone/migration.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/back-end/prisma/migrations/migration_lock.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back-end/.env" beforeDir="false" afterPath="$PROJECT_DIR$/back-end/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back-end/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/back-end/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back-end/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/back-end/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back-end/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/back-end/src/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,21 +36,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/03 - Repositorio Local/04 - Others/desafio-falae&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/wellington.silva/Documents/GitHub/desafio-falae",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\wellington.silva\Documents\GitHub\desafio-falae" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23726.103" />
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23726.103" />
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-WS-241.15989.105" />
       </set>
     </attachedChunks>
   </component>
@@ -71,6 +75,7 @@
       <workItem from="1731461157732" duration="86000" />
       <workItem from="1731461257421" duration="11000" />
       <workItem from="1731461369356" duration="20000" />
+      <workItem from="1731525314291" duration="1018000" />
     </task>
     <servers />
   </component>
