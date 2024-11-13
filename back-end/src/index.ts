@@ -7,7 +7,7 @@ dotenv.config();
 const prisma = new PrismaClient()
 const app: Express = express();
 
-
+app.use(express.json());
 
 const port = process.env.PORT || 3000;
 
@@ -17,36 +17,45 @@ app.get('/', (_,res: Response) => {
 
 app.post('/api/auth/register', async (req, res) => {
 
-    const {name, email, address, phone } = req.body
+    console.log(req.body);
+    const { name, email, address, phone } = req.body;
 
-    const user = await prisma.post.create({
-        data: {
-            name,
-            email,
-            address,
-            phone
-        }
-    })
-
-    res.json(user)
+    try {
+        const user = await prisma.user.create({
+            data: {
+                name,
+                email,
+                address,
+                phone,
+            }
+        });
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to create user' });
+    }
 })
 
 app.post('/api/products',async (req, res) => {
 
-    const {name, price, category, description, imageUrl} = req.body
+    const { name, price, category, description, imageUrl } = req.body;
 
-    const product = await prisma.post.create({
-        data: {
-            name, price, category, description, imageUrl
-        }
-    })
-
-    res.json(product)
+    try {
+        const product = await prisma.product.create({
+            data: {
+                name, price, category, description, imageUrl
+            }
+        });
+        res.json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to create product' });
+    }
 })
 
 app.get('/api/products', async (req, res) => {
 
-    const products = await prisma.products.findMany({
+    const products = await prisma.product.findMany({
 
     })
 })

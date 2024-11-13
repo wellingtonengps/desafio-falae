@@ -18,7 +18,7 @@ model User {
   name    String
   email   String  @unique
   address String
-  phone   Int?
+  phone   String?
   Order   Order[]
 }
 
