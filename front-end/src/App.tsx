@@ -1,6 +1,15 @@
+import {Button} from "@/components/ui/button.tsx";
+import Orders from "@/screens/Orders";
+import Clients from "@/screens/Clients";
+import Menu from "@/screens/Menu";
+
 function App() {return (
-      <h1 className="text-4x1 text-blue-500">Falaê project</h1>
-  )
+    <div>
+      <Orders/>
+      <Clients/>
+      <Menu/>
+    </div>
+)
 }
 
 export default App
