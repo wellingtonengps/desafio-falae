@@ -1,8 +1,8 @@
-import {Button} from "@/components/ui/button.tsx";
+
 
 function Menu() {return (
-    <div>
-        <Button>Menu</Button>
+    <div className="flex justify-center items-center h-screen">
+        <text>Menu</text>
     </div>
 )
 }

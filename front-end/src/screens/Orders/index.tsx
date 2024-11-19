@@ -1,8 +1,8 @@
-import {Button} from "@/components/ui/button.tsx";
+
 
 function Orders() {return (
-    <div>
-        <Button>Orders</Button>
+    <div className="flex justify-center items-center h-screen">
+        <text>Orders</text>
     </div>
 )
 }
