@@ -1,4 +1,4 @@
-import Button from "@/components/ui/button.tsx";
+import IconButtonCustom from "@/components/iconButtonCustom.tsx";
 import {useNavigate} from "react-router-dom";
 
 import { IoPerson } from "react-icons/io5";
@@ -13,9 +13,9 @@ function App() {
 
     <div className="flex justify-center items-center bg-amber-200 h-screen">
         <div className="flex gap-x-24">
-            <Button icon={<IoReceipt size={40}/>} label="Pedidos" onClick={() => navigate("/orders")} />
-            <Button icon={<IoFastFood size={40}/>} label="Menu" onClick={() => navigate("/menu")} />
-            <Button icon={<IoPerson size={40}/>} label="Clientes" onClick={() => navigate("/clients")} />
+            <IconButtonCustom icon={<IoReceipt size={40}/>} label="Pedidos" onClick={() => navigate("/orders")} />
+            <IconButtonCustom icon={<IoFastFood size={40}/>} label="Menu" onClick={() => navigate("/menu")} />
+            <IconButtonCustom icon={<IoPerson size={40}/>} label="Clientes" onClick={() => navigate("/clients")} />
         </div>
     </div>
 )
