@@ -1,6 +1,9 @@
+//todo: verificar esse error aqui
+
 import express, {Express, Request, Response} from "express";
 import dotenv from "dotenv"
 import {PrismaClient} from "@prisma/client";
+import cors from "cors"
 
 dotenv.config();
 
@@ -8,6 +11,7 @@ const prisma = new PrismaClient()
 const app: Express = express();
 
 app.use(express.json());
+app.use(cors())
 
 const port = process.env.PORT || 3000;
 
@@ -63,7 +67,7 @@ app.get('/api/products', async (req, res) => {
     }
 })
 
-
+//todo: tratar o erro quando mando o id inválido
 app.get('/api/products/:id', async (req, res) => {
     const { id } = req.params;
 
