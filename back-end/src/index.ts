@@ -15,6 +15,11 @@ app.use(cors())
 
 const port = process.env.PORT || 3000;
 
+type productType = {
+    productId: number,
+    quantity: number
+}
+
 app.get('/', (_,res: Response) => {
     res.send('server running...')
 });
@@ -38,6 +43,21 @@ app.post('/api/auth/register', async (req, res) => {
         res.status(500).json({ error: 'Failed to create user' });
     }
 })
+
+app.delete('/api/user/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await prisma.user.delete({
+            where: { id: parseInt(id) }
+        });
+
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete user' });
+    }
+});
 
 app.post('/api/products',async (req, res) => {
 
@@ -120,14 +140,90 @@ app.delete('/api/products/:id', async (req, res) => {
     }
 });
 
-app.post('/api/orders',() => {
+app.post('/api/orders', async (req,res) => {
 
+
+    const { userId, products }: { userId: number; products: productType[] } = req.body;
+
+    try {
+
+        const productIds = products.map(product => product.productId);
+
+        const dbProducts = await prisma.product.findMany({
+            where: {
+                id: { in: productIds },
+            },
+        });
+
+        const productMap = dbProducts.reduce((map, product) => {
+            map[product.id] = product;
+            return map;
+        }, {} as { [key: number]: { price: number } });
+
+        const totalPrice = products.reduce((acc, product) => {
+            const productFromDb = productMap[product.productId];
+            if (productFromDb) {
+                return acc + (product.quantity * productFromDb.price); // Multiplica a quantidade pelo preço do produto
+            }
+            return acc;
+        }, 0);
+
+        const order = await prisma.order.create({
+            data: {
+                userId: userId,
+                totalPrice: totalPrice,
+                status: "Pendente",
+                OrderItem: {
+                    create: products.map(product => ({
+                        quantity: product.quantity,
+                        Product: {
+                            connect: { id: product.productId },
+                        },
+                    })),
+                },
+            }
+        });
+        res.json(order);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to create order' });
+    }
 })
 
-app.post('/api/orders/:id', () => {
 
+
+app.get('/api/orders/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try{
+        const order = await prisma.order.findUnique({
+            where: { id: parseInt(id) },
+            include: {
+                OrderItem: {
+                    include: {
+                        Product: true,
+                    },
+                },
+            },
+        });
+
+        res.json(order);
+    }catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch order' });
+    }
 })
 
+app.get('/api/orders', async (req, res) => {
+
+    try {
+        const orders = await prisma.order.findMany();
+        res.json(orders);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch products' });
+    }
+})
 
 
 

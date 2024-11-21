@@ -7,7 +7,8 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 
 import Clients from "@/screens/Clients";
 import Orders from "@/screens/Orders";
-import Menu from "@/screens/Menu";
+import Estoque from "@/screens/Estoque";
+
 
 const router = createBrowserRouter([
     {
@@ -19,8 +20,8 @@ const router = createBrowserRouter([
         element: <Clients/>
     },
     {
-        path: "menu",
-        element: <Menu/>
+        path: "estoque",
+        element: <Estoque/>
     },
     {
         path: "orders",
