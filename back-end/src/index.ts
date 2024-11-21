@@ -44,6 +44,68 @@ app.post('/api/auth/register', async (req, res) => {
     }
 })
 
+app.get('/api/users/:id', async (req, res) => {
+    const userId = parseInt(req.params.id, 10);
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+        });
+
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch user' });
+    }
+});
+
+app.get('/api/users', async (req, res) => {
+    try {
+        const users = await prisma.user.findMany();
+
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
+});
+
+
+app.put('/api/users/:id', async (req, res) => {
+    const userId = parseInt(req.params.id, 10);
+    const { name, email, address, phone } = req.body;
+
+    try {
+        const existingUser = await prisma.user.findUnique({
+            where: { id: userId },
+        });
+
+        if (!existingUser) {
+            res.status(404).json({ error: 'User not found' });
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                name,
+                email,
+                address,
+                phone,
+            },
+        });
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update user' });
+    }
+});
+
+
 app.delete('/api/user/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -97,10 +159,10 @@ app.get('/api/products/:id', async (req, res) => {
         });
 
         if (!product) {
-            res.status(404).json({ error: 'Product not found' });
+            res.status(404).send({ error: 'Product not found' });
         }
 
-        res.json(product);
+        return res.json(product);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch product' });
@@ -190,6 +252,106 @@ app.post('/api/orders', async (req,res) => {
     }
 })
 
+app.put('/api/orders/:id', async (req, res) => {
+    const orderId = parseInt(req.params.id);
+    const { userId, products }: { userId: number; products: productType[] } = req.body;
+
+    try {
+        const existingOrder = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { OrderItem: true },
+        });
+
+        if (!existingOrder) {
+           res.status(404).json({ error: 'Order not found' });
+        }
+
+        const productIds = products.map(product => product.productId);
+
+        const dbProducts = await prisma.product.findMany({
+            where: {
+                id: { in: productIds },
+            },
+        });
+
+        const productMap = dbProducts.reduce((map, product) => {
+            map[product.id] = product;
+            return map;
+        }, {} as { [key: number]: { price: number } });
+
+
+        const totalPrice = products.reduce((acc, product) => {
+            const productFromDb = productMap[product.productId];
+            if (productFromDb) {
+                return acc + product.quantity * productFromDb.price;
+            }
+            return acc;
+        }, 0);
+
+        const updatedOrder = await prisma.order.update({
+            where: { id: orderId },
+            data: {
+                userId: userId,
+                totalPrice: totalPrice,
+                OrderItem: {
+                    deleteMany: {},
+                    create: products.map(product => ({
+                        quantity: product.quantity,
+                        Product: {
+                            connect: { id: product.productId },
+                        },
+                    })),
+                },
+            },
+            include: {
+                OrderItem: {
+                    include: { Product: true },
+                },
+            },
+        });
+
+        const formattedOrder = {
+            id: updatedOrder.id,
+            totalPrice: updatedOrder.totalPrice,
+            status: updatedOrder.status,
+            createdAt: updatedOrder.createdAt.toISOString(),
+            products: updatedOrder.OrderItem.map(item => ({
+                name: item.Product?.name,
+                quantity: item.quantity,
+                price: item.Product?.price,
+            })),
+        };
+
+        res.json(formattedOrder);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update order' });
+    }
+});
+
+app.delete('/api/orders/:id', async (req, res) => {
+    const orderId = parseInt(req.params.id, 10);
+
+    try {
+        const existingOrder = await prisma.order.findUnique({
+            where: { id: orderId },
+        });
+
+        if (!existingOrder) {
+            res.status(404).json({ error: 'Order not found' });
+        }
+
+        await prisma.order.delete({
+            where: { id: orderId },
+        });
+
+        res.status(200).json({ message: 'Order deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete order' });
+    }
+});
+
 
 
 app.get('/api/orders/:id', async (req, res) => {
@@ -207,7 +369,20 @@ app.get('/api/orders/:id', async (req, res) => {
             },
         });
 
-        res.json(order);
+        const formattedOrder = {
+            id: order!.id,
+            totalPrice: order!.totalPrice,
+            status: order!.status,
+            createdAt: order!.createdAt.toISOString(),
+            products: order!.OrderItem.map(item => ({
+                name: item.Product!.name,
+                quantity: item.quantity,
+                price: item.Product!.price,
+            })),
+        };
+
+
+        res.json(formattedOrder);
     }catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch order' });
@@ -217,8 +392,30 @@ app.get('/api/orders/:id', async (req, res) => {
 app.get('/api/orders', async (req, res) => {
 
     try {
-        const orders = await prisma.order.findMany();
-        res.json(orders);
+        const orders =await prisma.order.findMany({
+            include: {
+                OrderItem: {
+                    include: {
+                        Product: true,
+                    },
+                },
+            },
+        });
+
+
+        const formattedOrder = orders.map(order => ({
+            id: order!.id,
+            totalPrice: order!.totalPrice,
+            status: order!.status,
+            createdAt: order!.createdAt.toISOString(),
+            products: order!.OrderItem.map(item => ({
+                name: item.Product!.name,
+                quantity: item.quantity,
+                price: item.Product!.price,
+            })),
+        }));
+
+        res.json(formattedOrder);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch products' });
