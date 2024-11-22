@@ -1,9 +1,8 @@
-//todo: verificar esse error aqui
-
-import express, {Express, Request, Response} from "express";
+import express, {Express} from "express";
 import dotenv from "dotenv"
 import {PrismaClient} from "@prisma/client";
 import cors from "cors"
+import Routers from "./routes";
 
 dotenv.config();
 
@@ -15,15 +14,7 @@ app.use(cors())
 
 const port = process.env.PORT || 3000;
 
-type productType = {
-    productId: number,
-    quantity: number
-}
-
-app.get('/', (_,res: Response) => {
-    res.send('server running...')
-});
-
+app.use(Routers)
 
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`)

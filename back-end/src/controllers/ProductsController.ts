@@ -1,7 +1,15 @@
+import { Request, Response } from "express";
 import {prisma} from "../index";
 
 
-const getAllProducts = async (req, res) => {
+type productType = {
+    productId: number,
+    quantity: number
+}
+
+
+
+const getAllProducts = async (req: Request, res: Response) => {
 
     try {
         const products = await prisma.product.findMany();
@@ -12,26 +20,22 @@ const getAllProducts = async (req, res) => {
     }
 };
 
-const getProduct =  async (req, res) => {
+const getProduct =  async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
         const product = await prisma.product.findUnique({
             where: { id: parseInt(id) },
         });
-
-        if (!product) {
-            res.status(404).send({ error: 'Product not found' });
-        }
-
-        return res.json(product);
+        
+        res.json(product);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch product' });
     }
 };
 
-const createProduct = async (req, res) => {
+const createProduct = async (req: Request, res: Response) => {
 
     const { name, price, category, description, imageUrl } = req.body;
 
@@ -48,7 +52,7 @@ const createProduct = async (req, res) => {
     }
 };
 
-const updateProduct =  async (req, res) => {
+const updateProduct =  async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name, price, category, description, imageUrl } = req.body;
 
@@ -65,7 +69,7 @@ const updateProduct =  async (req, res) => {
     }
 };
 
-const deleteProduct = async (req, res) => {
+const deleteProduct = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
@@ -78,4 +82,12 @@ const deleteProduct = async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Failed to delete product' });
     }
+}
+
+export default {
+    getAllProducts,
+    getProduct,
+    createProduct,
+    updateProduct,
+    deleteProduct
 }

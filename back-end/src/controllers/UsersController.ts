@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
 import {prisma} from "../index";
 
-//todo: fazer o import do prisma
 
-const getAllUser = async (_, res) => {
+const getAllUser = async (req: Request, res:Response) => {
     try {
         const users = await prisma.user.findMany();
 
@@ -14,7 +13,7 @@ const getAllUser = async (_, res) => {
     }
 };
 
-const getUser = async (req, res) => {
+const getUser = async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id, 10);
 
     try {
@@ -33,7 +32,7 @@ const getUser = async (req, res) => {
     }
 };
 
-const createUser =  async (req, res) => {
+const createUser =  async (req: Request, res: Response) => {
 
     const { name, email, address, phone } = req.body;
 
@@ -53,7 +52,7 @@ const createUser =  async (req, res) => {
     }
 }
 
-const updateUser = async (req, res) => {
+const updateUser = async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id, 10);
     const { name, email, address, phone } = req.body;
 
@@ -83,7 +82,7 @@ const updateUser = async (req, res) => {
     }
 }
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
@@ -98,3 +97,10 @@ const deleteUser = async (req, res) => {
     }
 };
 
+export default {
+    getAllUser,
+    getUser,
+    createUser,
+    updateUser,
+    deleteUser
+}

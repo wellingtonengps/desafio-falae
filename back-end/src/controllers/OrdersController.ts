@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
 import {prisma} from "../index";
-//todo: adicionar prisma
 
+type productType = {
+    productId: number,
+    quantity: number
+}
 
-const getAllOrders = async (req, res) => {
+const getAllOrders = async (req: Request, res: Response) => {
 
     try {
         const orders =await prisma.order.findMany({
@@ -35,7 +38,7 @@ const getAllOrders = async (req, res) => {
     }
 };
 
-const getOrder =  async (req, res) => {
+const getOrder =  async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try{
@@ -56,9 +59,8 @@ const getOrder =  async (req, res) => {
             status: order!.status,
             createdAt: order!.createdAt.toISOString(),
             products: order!.OrderItem.map(item => ({
-                name: item.Product!.name,
-                quantity: item.quantity,
-                price: item.Product!.price,
+                name: item.Product!.name, quantity: item.quantity,
+               price: item.Product!.price,
             })),
         };
 
@@ -70,7 +72,7 @@ const getOrder =  async (req, res) => {
     }
 };
 
-const createOrder = async (req,res) => {
+const createOrder = async (req: Request, res: Response) => {
 
     const { userId, products }: { userId: number; products: productType[] } = req.body;
 
@@ -119,7 +121,7 @@ const createOrder = async (req,res) => {
     }
 };
 
-const updateOrder = async (req, res) => {
+const updateOrder = async (req: Request, res: Response) => {
     const orderId = parseInt(req.params.id);
     const { userId, products }: { userId: number; products: productType[] } = req.body;
 
@@ -196,7 +198,7 @@ const updateOrder = async (req, res) => {
     }
 };
 
-const deleteOrder = async (req, res) => {
+const deleteOrder = async (req: Request, res: Response) => {
     const orderId = parseInt(req.params.id, 10);
 
     try {
@@ -217,4 +219,12 @@ const deleteOrder = async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Failed to delete order' });
     }
+}
+
+export default  {
+    getAllOrders,
+    getOrder,
+    createOrder,
+    updateOrder,
+    deleteOrder
 }
