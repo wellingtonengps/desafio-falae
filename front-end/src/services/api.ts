@@ -25,8 +25,19 @@ export async function getAllProducts(): Promise<Order[]> {
 
 export async function getAllOrders(): Promise<Order[]> {
     try {
+        const response: AxiosResponse<Order[]> = await  api.get("/api/orders");
+        console.log(response.data)
 
-        const response: AxiosResponse<Order[]> = await  api.get("/api/products");
+        return response.data
+    }catch (error) {
+        console.error("Error fetching orders:", error);
+        throw error;
+    }
+}
+
+export async function deleteOrder(id: number): Promise<Order[]> {
+    try {
+        const response = await api.delete(`/api/orders/${id}`);
         console.log(response.data)
 
         return response.data
@@ -37,45 +48,39 @@ export async function getAllOrders(): Promise<Order[]> {
 }
 
 
+export async function updateOrder(
+    id: number,
+    updateData: { userId?: number; status?: string; products?: { productId: number; quantity: number }[] }
+): Promise<Order> {
+    try {
+        // Merge the existing data with the updated data
+        const updatedOrder = {
+            "userId": updateData.userId,
+            "status": updateData.status,
+            "products": [
+            {
+                "productId": 3,
+                "quantity": 3
+            },
+            {
+                "productId": 2,
+                "quantity": 10
+            }
+            ]
+        };
 
-/*
-async function getData(): Promise<Order[]> {
-    // Fetch data from your API here.
-    return [
-        {
-            id: 1,
-            totalPrice: 56.99,
-            status: "Pendente",
-            createdAt: new Date("2024-11-06T12:34:56Z"),
-            userId: "Wellington Pereira"
-        },
-        {
-            id: 2,
-            totalPrice: 62.99,
-            status: "Entregue",
-            createdAt: new Date("2024-11-06T12:34:56Z"),
-            userId: "Gabriela Souza"
-        },
-        {
-            id: 2,
-            totalPrice: 62.99,
-            status: "Entregue",
-            createdAt: new Date("2024-12-06T12:34:56Z"),
-            userId: "Samuel Torres"
-        },
-        {
-            id: 2,
-            totalPrice: 15.99,
-            status: "Entregue",
-            createdAt: new Date("2024-12-03T12:34:56Z"),
-            userId: "Vanessa Silva"
-        },
-        {
-            id: 2,
-            totalPrice: 15.99,
-            status: "Entregue",
-            createdAt: new Date("2024-12-07T12:34:56Z"),
-            userId: "Pedro Carlos"
-        },
-    ]
-}*/
+        // Send the updated order data to the API
+        const response = await api.put(`/api/orders/${id}`, updatedOrder);
+
+        console.log(response.data)
+
+        console.log("Updated Order:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating order:", error);
+        throw error;
+    }
+}
+
+
+

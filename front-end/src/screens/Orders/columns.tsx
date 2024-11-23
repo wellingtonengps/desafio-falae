@@ -12,6 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {Button} from "@/components/ui/button.tsx";
+import {deleteOrder, updateOrder} from "@/services/api.ts";
 
 export type Order = {
     id: number
@@ -75,10 +76,13 @@ export const columns: ColumnDef<Order>[] = [
             )
         },
         cell: ({row }) => {
-            const formatted = new Intl.DateTimeFormat("pt-BR", {
+
+            const date = new Date(row.getValue("createdAt"));
+
+            const formatted = new Intl.DateTimeFormat("en-US", {
                 dateStyle: "short",
                 timeStyle: "medium"
-            }).format(row.getValue("createdAt"))
+            }).format(date)
 
             return <div className="ml-4">{formatted}</div>
         }
@@ -99,32 +103,43 @@ export const columns: ColumnDef<Order>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Ações</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(String(order.id))}
+                            onClick={() => {
+                                deleteOrder(parseInt(row.getValue("id")))
+                            }}
                         >
                             Apagar pedido
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => {
 
-                                console.log("teste")
-                            }}
                         >
                             Editar pedido
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Status</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => {}}
+                            onClick={() => {
+                                updateOrder(row.getValue("id"), {
+                                    status: "Pendente"
+                                })
+                            }}
                         >
                             Pendente
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(String(order.id))}
+                            onClick={() => {
+                                updateOrder(row.getValue("id"), {
+                                    status: "Em preparo"
+                                })
+                            }}
                         >
                             Em preparo
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(String(order.id))}
+                            onClick={() => {
+                                updateOrder(row.getValue("id"), {
+                                    status: "Entregue"
+                                })
+                            }}
                         >
                             Entregue
                         </DropdownMenuItem>

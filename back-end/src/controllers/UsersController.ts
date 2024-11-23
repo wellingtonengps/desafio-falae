@@ -1,99 +1,70 @@
 import { Request, Response } from "express";
 import {prisma} from "../index";
+import {userService} from "../service/userService";
 
 
 const getAllUser = async (req: Request, res:Response) => {
     try {
-        const users = await prisma.user.findMany();
-
-        res.json(users);
+        const users= await userService.getAllUser();
+        res.status(200).json(users);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch users' });
+        res.status(500).json({ error: 'Falha ao buscar os usuários' });
     }
 };
 
 const getUser = async (req: Request, res: Response) => {
-    const userId = parseInt(req.params.id, 10);
+    const id =  parseInt(req.params.id);
 
     try {
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-        });
-
-        if (!user) {
-            res.status(404).json({ error: 'User not found' });
-        }
-
-        res.json(user);
+        const user = userService.getUser(id)
+        res.status(200).json(user);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch user' });
+        res.status(500).json({ error: 'Falha ao buscar o usuário ' });
     }
 };
 
-const createUser =  async (req: Request, res: Response) => {
+const createUser =  async (req: Request, res: Response): Promise<void> => {
 
-    const { name, email, address, phone } = req.body;
-
-    try {
-        const user = await prisma.user.create({
-            data: {
-                name,
-                email,
-                address,
-                phone,
-            }
-        });
-        res.json(user);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to create user' });
-    }
-}
-
-const updateUser = async (req: Request, res: Response) => {
-    const userId = parseInt(req.params.id, 10);
     const { name, email, address, phone } = req.body;
 
     try {
         const existingUser = await prisma.user.findUnique({
-            where: { id: userId },
+            where: { email },
         });
 
-        if (!existingUser) {
-            res.status(404).json({ error: 'User not found' });
+        if (existingUser) {
+            res.status(400).json({ error: "Esse e-mail já esta sendo utilizado" });
+            return;
         }
 
-        const updatedUser = await prisma.user.update({
-            where: { id: userId },
-            data: {
-                name,
-                email,
-                address,
-                phone,
-            },
-        });
+        const user = await userService.createUser({name, email, address, phone});
 
-        res.json(updatedUser);
+        res.status(201).json(user);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to update user' });
+        res.status(500).json({ error: "Falha ao criar o usuário" });
+    }
+}
+
+const updateUser = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id);
+    const { name, email, address, phone } = req.body;
+
+    try {
+        const user = await userService.updateUser({id, name, email, address, phone })
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: 'Falha ao atualizar o usuário' });
     }
 }
 
 const deleteUser = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id  = parseInt(req.params.id);
 
     try {
-        await prisma.user.delete({
-            where: { id: parseInt(id) }
-        });
-
-        res.json({ message: 'User deleted successfully' });
+        await userService.deleteUser(id);
+        res.status(204).json();
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to delete user' });
+        res.status(500).json({ error: 'Falha ao deletar o usuário' });
     }
 };
 

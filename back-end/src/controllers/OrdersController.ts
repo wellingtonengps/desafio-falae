@@ -1,138 +1,57 @@
 import { Request, Response } from "express";
 import {prisma} from "../index";
+import {orderService} from "../service/orderService";
+import {OrderRequest} from "../dto/orderDto";
+import {productService} from "../service/productService";
 
-type productType = {
-    productId: number,
-    quantity: number
-}
 
 const getAllOrders = async (req: Request, res: Response) => {
 
     try {
-        const orders =await prisma.order.findMany({
-            include: {
-                OrderItem: {
-                    include: {
-                        Product: true,
-                    },
-                },
-            },
-        });
-
-        const formattedOrder = orders.map(order => ({
-            id: order!.id,
-            totalPrice: order!.totalPrice,
-            status: order!.status,
-            createdAt: order!.createdAt.toISOString(),
-            products: order!.OrderItem.map(item => ({
-                name: item.Product!.name,
-                quantity: item.quantity,
-                price: item.Product!.price,
-            })),
-        }));
-
-        res.json(formattedOrder);
+        const order = await orderService.getAllOrders();
+        res.status(200).json(order);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch products' });
+        res.status(500).json({ error: 'Falha ao buscar os pedidos' });
     }
 };
 
 const getOrder =  async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id  = parseInt(req.params.id);
 
     try{
-        const order = await prisma.order.findUnique({
-            where: { id: parseInt(id) },
-            include: {
-                OrderItem: {
-                    include: {
-                        Product: true,
-                    },
-                },
-            },
-        });
-
-        const formattedOrder = {
-            id: order!.id,
-            totalPrice: order!.totalPrice,
-            status: order!.status,
-            createdAt: order!.createdAt.toISOString(),
-            products: order!.OrderItem.map(item => ({
-                name: item.Product!.name, quantity: item.quantity,
-               price: item.Product!.price,
-            })),
-        };
-
-
-        res.json(formattedOrder);
+        const order = await orderService.getOrder(id)
+        res.status(200).json(order);
     }catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch order' });
+        res.status(500).json({ error: 'Falha ao buscar o pedido' });
     }
 };
 
 const createOrder = async (req: Request, res: Response) => {
-
-    const { userId, products }: { userId: number; products: productType[] } = req.body;
+    /*
+    const { userId, products }: OrderRequest = req.body;
 
     try {
 
-        const productIds = products.map(product => product.productId);
-
-        const dbProducts = await prisma.product.findMany({
-            where: {
-                id: { in: productIds },
-            },
-        });
-
-        const productMap = dbProducts.reduce((map, product) => {
-            map[product.id] = product;
-            return map;
-        }, {} as { [key: number]: { price: number } });
-
-        const totalPrice = products.reduce((acc, product) => {
-            const productFromDb = productMap[product.productId];
-            if (productFromDb) {
-                return acc + (product.quantity * productFromDb.price); // Multiplica a quantidade pelo preço do produto
-            }
-            return acc;
-        }, 0);
-
-        const order = await prisma.order.create({
-            data: {
-                userId: userId,
-                totalPrice: totalPrice,
-                status: "Pendente",
-                OrderItem: {
-                    create: products.map(product => ({
-                        quantity: product.quantity,
-                        Product: {
-                            connect: { id: product.productId },
-                        },
-                    })),
-                },
-            }
-        });
         res.json(order);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to create order' });
-    }
+    }*/
 };
 
 const updateOrder = async (req: Request, res: Response) => {
-    const orderId = parseInt(req.params.id);
-    const { userId, products }: { userId: number; products: productType[] } = req.body;
+    /*const id = parseInt(req.params.id);
+
+    const { userId, products }: OrderRequest = req.body;
 
     try {
         const existingOrder = await prisma.order.findUnique({
-            where: { id: orderId },
+            where: { id },
             include: { OrderItem: true },
         });
 
         if (!existingOrder) {
-            res.status(404).json({ error: 'Order not found' });
+            res.status(404).json({ error: 'Pedido não encontrado' });
         }
 
         const productIds = products.map(product => product.productId);
@@ -158,10 +77,11 @@ const updateOrder = async (req: Request, res: Response) => {
         }, 0);
 
         const updatedOrder = await prisma.order.update({
-            where: { id: orderId },
+            where: { id},
             data: {
                 userId: userId,
                 totalPrice: totalPrice,
+                status: status,
                 OrderItem: {
                     deleteMany: {},
                     create: products.map(product => ({
@@ -195,11 +115,11 @@ const updateOrder = async (req: Request, res: Response) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to update order' });
-    }
+    }*/
 };
 
 const deleteOrder = async (req: Request, res: Response) => {
-    const orderId = parseInt(req.params.id, 10);
+    /*const orderId = parseInt(req.params.id, 10);
 
     try {
         const existingOrder = await prisma.order.findUnique({
@@ -218,7 +138,7 @@ const deleteOrder = async (req: Request, res: Response) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to delete order' });
-    }
+    }*/
 }
 
 export default  {
