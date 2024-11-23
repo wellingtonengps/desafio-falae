@@ -16,7 +16,7 @@ const getUser = async (req: Request, res: Response) => {
     const id =  parseInt(req.params.id);
 
     try {
-        const user = userService.getUser(id)
+        const user = await userService.getUser(id)
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ error: 'Falha ao buscar o usuário ' });

@@ -1,47 +1,38 @@
-import {productRepositories} from "../repositories/productRepository";
 import {orderRepositories} from "../repositories/orderRepository";
 import {OrderRequest, OrderResponse, OrderService} from "../dto/orderDto";
 
 
-
-
-/*
-const createOrder  = async ({userId, products
+const createOrder  = async ({userId, orderItem
                                  }: OrderRequest): Promise<OrderResponse> => {
 
-    return await orderRepositories.createOrder({userId, products})
+    return await orderRepositories.createOrder({orderItem, userId})
 }
 
 const updateOrder  = async ({
                                   id,
-                                OrderItem, status, createdAt, totalPrice}: OrderResponse) => {
+                                orderItem, status, createdAt, totalPrice}: OrderResponse): Promise<OrderResponse> => {
 
-    return await  orderRepositories.updateOrder({  id, OrderItem, status, createdAt, totalPrice})
-}*/
+    return await  orderRepositories.updateOrder({ id,
+        orderItem, status, createdAt, totalPrice})
+}
 
 const deleteOrder = async (
-    id: number) => {
+    id: number): Promise<void> => {
 
     await orderRepositories.deleteOrder(id)
 }
 
-const getAllOrders = async () => {
+const getAllOrders = async () :Promise<OrderResponse[]> => {
     return await orderRepositories.getAllOrders();
 }
 
-const getOrder = async (id: number) => {
-    const order =  await orderRepositories.getOrder(id)
-
-    if(!order){
-        throw new Error("Produto não encontrado")
-    }
-
-    return order
+const getOrder = async (id: number): Promise<OrderResponse | null> => {
+    return await orderRepositories.getOrder(id)
 }
 
 export const orderService : OrderService = {
-    //createOrder,
-    //updateOrder,
+    createOrder,
+    updateOrder,
     deleteOrder,
     getAllOrders,
     getOrder,
