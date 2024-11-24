@@ -12,8 +12,7 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-
-import {createUser, UserRequest} from "@/services/UserServices.ts";
+import {UserRequest, userService} from "@/services/UserServices.ts";
 
 
 const formSchema = z.object({
@@ -43,7 +42,7 @@ export function CreateUserForm({ onClose }: { onClose: () => void}) {
 
     async function onSubmit(values: UserRequest) {
         try {
-            await createUser(values);
+            await userService.createUser(values);
             onClose();
         } catch (error: any) {
             if (error.response && error.response.status === 400) {

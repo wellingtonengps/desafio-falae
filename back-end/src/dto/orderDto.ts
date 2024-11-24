@@ -1,9 +1,12 @@
+import {UserResponse} from "./userDto";
+
 interface OrderResponse {
     id: number;
     status: string,
     totalPrice: number,
     createdAt: Date,
     orderItem: OrderItem[];
+    user?: UserResponse
 }
 
 type Product = {

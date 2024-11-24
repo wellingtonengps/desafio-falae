@@ -44,7 +44,7 @@ const updateOrder = async (req: Request, res: Response) => {
 
     try {
         const order = await orderService.updateOrder({id, orderItem, totalPrice, createdAt, status})
-        res.status(201).json(order)
+        res.status(200).json(order)
     }catch (error) {
         res.status(500).json({ error: 'Falha ao criar pedido' });
     }

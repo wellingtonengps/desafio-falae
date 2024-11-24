@@ -13,24 +13,21 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {Button} from "@/components/ui/button.tsx";
 import {deleteOrder, updateOrder} from "@/services/api.ts";
-
-export type Order = {
-    id: number
-    userId: number
-    totalPrice: number
-    status: "Pendente" | "Em Preparo" | "Entregue"
-    createdAt: Date
-}
+import {OrderResponse} from "@/services/OrdersServices.ts";
 
 
-export const columns: ColumnDef<Order>[] = [
+export const columns: ColumnDef<OrderResponse>[] = [
     {
         accessorKey: "id",
-        header: "ID"
+        header: "Código"
     },
     {
-        accessorKey: "userId",
+        accessorKey: "user",
         header: "Cliente",
+        cell: ({ row }) => {
+            const user = row.getValue("user") as { name: string };
+            return <div>{user.name}</div>;
+        },
     },
     {
         accessorKey: "totalPrice",
@@ -90,7 +87,6 @@ export const columns: ColumnDef<Order>[] = [
     {
         id: "actions",
         cell: ({ row }) => {
-            const order = row.original
 
             return (
                 <DropdownMenu>

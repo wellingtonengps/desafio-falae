@@ -17,7 +17,12 @@ export type UserResponse = {
 }
 
 
-export async function createUser(userRequest: UserRequest ): Promise<UserResponse> {
+interface UserService {
+    getUser(id: number): Promise<UserResponse | null>;
+    createUser(userRequest : UserRequest): Promise<UserResponse>;
+}
+
+const createUser = async (userRequest: UserRequest ): Promise<UserResponse> => {
     try {
         const response: AxiosResponse<UserResponse> = await api.post("/api/auth/register", userRequest);
         console.log(response.data)
@@ -27,4 +32,21 @@ export async function createUser(userRequest: UserRequest ): Promise<UserRespons
         console.error("Error fetching orders:", error);
         throw error;
     }
+}
+
+const getUser = async  (id: number) => {
+    try {
+        const response: AxiosResponse<UserResponse> = await api.get(`/api/auth/register${id}`,);
+        console.log(response.data)
+        return response.data
+    }catch (error) {
+        console.error("Error fetching orders:", error);
+        throw error;
+    }
+}
+
+
+export const userService : UserService = {
+    getUser,
+    createUser
 }

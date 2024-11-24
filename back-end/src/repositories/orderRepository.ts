@@ -1,15 +1,17 @@
-import { prisma } from "../index";
-import { OrderRepository, OrderRequest, OrderResponse } from "../dto/orderDto";
+import {prisma} from "../index";
+import {OrderRepository, OrderRequest, OrderResponse} from "../dto/orderDto";
 
 const createOrder= async ({  orderItem, userId}: OrderRequest) =>{
-    // Start a transaction to ensure all operations are executed atomically
     const order= await prisma.$transaction(async (prisma) => {
-        // Create the order
         const createdOrder = await prisma.order.create({
             data: {
-                totalPrice: 0, // We'll update this after creating the order items
-                status: 'pending', // Assuming the initial status is 'pending'
-                userId: userId,
+                totalPrice: 0,
+                status: "Pendente",
+                user: {
+                    connect: {
+                        id: userId
+                    }
+                },
                 OrderItem: {
                     create: orderItem.map(item => ({
                         quantity: item.quantity,
@@ -19,7 +21,6 @@ const createOrder= async ({  orderItem, userId}: OrderRequest) =>{
             },
         });
 
-        // Calculate the total price
         const totalPrice = await Promise.all(
             orderItem.map(async (item) => {
                 const product = await prisma.product.findUnique({
@@ -29,63 +30,59 @@ const createOrder= async ({  orderItem, userId}: OrderRequest) =>{
             })
         ).then(prices => prices.reduce((sum, price) => sum + price, 0));
 
-        // Update the order with the calculated total price
-        const updatedOrder = await prisma.order.update({
-            where: { id: createdOrder.id },
-            data: { totalPrice },
+        return prisma.order.update({
+            where: {id: createdOrder.id},
+            data: {totalPrice},
+            include: {
+                user: true
+            }
         });
-
-        return updatedOrder;
     });
 
-    // Get the OrderItem details along with the associated Product information
     const orderItems = await prisma.orderItem.findMany({
         where: { orderId: order.id },
         include: {
-            Product: true, // Include the related product details
+            Product: true,
         },
     });
 
-    // Return the final order response
     return {
         id: order.id,
         status: order.status,
         totalPrice: order.totalPrice,
         createdAt: order.createdAt,
         orderItem: orderItems,
+        user: order.user,
     };
 };
 
 const updateOrder = async ({ id, status, totalPrice, orderItem }: OrderResponse): Promise<OrderResponse> => {
-    // Start a transaction to ensure atomic updates
     const updatedOrder = await prisma.$transaction(async (prisma) => {
-        // Update the main Order record with new status and total price
+
         const order = await prisma.order.update({
             where: { id },
             data: {
-                status: status ?? undefined, // Only update status if provided
-                totalPrice: totalPrice ?? undefined, // Only update totalPrice if provided
+                status: status ?? undefined,
+                totalPrice: totalPrice ?? undefined,
             },
         });
 
-        // If order items are provided, we need to update or create them
         if (orderItem && orderItem.length > 0) {
             await Promise.all(
                 orderItem.map(async (item) => {
-                    if (item.id) {
-                        // If the order item exists (id is provided), update it
+                    if (!item.id) {
+                        console.log('Item não encotrado no pedido');
+                        return;
+                    }
+
+                    const existingOrderItem = await prisma.orderItem.findUnique({
+                        where: { id: item.id },
+                    });
+
+                    if (existingOrderItem) {
                         await prisma.orderItem.update({
                             where: { id: item.id },
                             data: {
-                                quantity: item.quantity,
-                                productId: item.productId,
-                            },
-                        });
-                    } else {
-                        // If the order item does not exist, create a new one
-                        await prisma.orderItem.create({
-                            data: {
-                                orderId: id,
                                 quantity: item.quantity,
                                 productId: item.productId,
                             },
@@ -95,19 +92,30 @@ const updateOrder = async ({ id, status, totalPrice, orderItem }: OrderResponse)
             );
         }
 
-        // Return the updated order object
-        return order;
+        const updatedTotalPrice = await Promise.all(
+            orderItem.map(async (item) => {
+                const product = await prisma.product.findUnique({
+                    where: { id: item.productId ?? undefined },
+                });
+                return (product?.price || 0) * item.quantity;
+            })
+        ).then(prices => prices.reduce((sum, price) => sum + price, 0));
+
+
+        return prisma.order.update({
+            where: {id: order.id},
+            data: {totalPrice: updatedTotalPrice},
+        });
     });
 
-    // Fetch the updated order details including OrderItems and Product details
+
     const updatedOrderItems = await prisma.orderItem.findMany({
         where: { orderId: updatedOrder.id },
         include: {
-            Product: true, // Include Product details for each order item
+            Product: true,
         },
     });
 
-    // Return the final updated OrderResponse
     return {
         id: updatedOrder.id,
         status: updatedOrder.status,
@@ -118,6 +126,8 @@ const updateOrder = async ({ id, status, totalPrice, orderItem }: OrderResponse)
 };
 
 
+
+
 const deleteOrder = async (id: number): Promise<void> => {
     await prisma.order.delete({
         where: { id },
@@ -125,23 +135,23 @@ const deleteOrder = async (id: number): Promise<void> => {
 };
 
 const getAllOrders = async (): Promise<OrderResponse[]> => {
-    // Fetch all orders with associated order items and products
     const orders = await prisma.order.findMany({
         include: {
             OrderItem: {
                 include: {
-                    Product: true, // Include product details for each order item
+                    Product: true,
                 },
             },
+            user: true
         },
     });
 
-    // Map through the fetched orders and format them into the OrderResponse structure
     return orders.map((order) => ({
         id: order.id,
         status: order.status,
         totalPrice: order.totalPrice,
         createdAt: order.createdAt,
+        user: order.user,
         orderItem: order.OrderItem.map((item) => ({
             id: item.id,
             productId: item.productId,
@@ -161,29 +171,28 @@ const getAllOrders = async (): Promise<OrderResponse[]> => {
 
 
 const getOrder = async (id: number): Promise<OrderResponse | null> => {
-    // Fetch the order by its ID, including the related order items and product details
     const order = await prisma.order.findUnique({
-        where: { id }, // Find the order by ID
+        where: { id },
         include: {
             OrderItem: {
                 include: {
-                    Product: true, // Include product details for each order item
+                    Product: true,
                 },
             },
+            user: true
         },
     });
 
-    // If the order is not found, return null
     if (!order) {
         throw new Error('Pedido não encontrado');
     }
 
-    // Format the order and return the response
     return {
         id: order.id,
         status: order.status,
         totalPrice: order.totalPrice,
         createdAt: order.createdAt,
+        user: order.user,
         orderItem: order.OrderItem.map((item) => ({
             id: item.id,
             productId: item.productId || null,

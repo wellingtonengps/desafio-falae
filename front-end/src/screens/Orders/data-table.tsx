@@ -21,6 +21,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import React from "react";
+import {Input} from "@/components/ui/input.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -53,6 +54,16 @@ export function DataTable<TData, TValue>({
 
     return (
         <div>
+            <div className="flex items-center py-4">
+                <Input
+                    placeholder="Buscar cliente..."
+                    value={(table.getColumn("user")?.getFilterValue() as string) ?? ""}
+                    onChange={(event) =>
+                        table.getColumn("user")?.setFilterValue(event.target.value)
+                    }
+                    className="max-w-sm"
+                />
+            </div>
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
