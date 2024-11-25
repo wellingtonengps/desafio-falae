@@ -106,7 +106,7 @@ export function CreateOrderForm({ onClose }: { onClose: () => void }) {
                         {filteredUsers.map((user) => (
                             <li
                                 key={user.id}
-                                className="cursor-pointer hover:bg-gray-100 p-2 bg-amber-500"
+                                className="cursor-pointer hover:bg-zinc-200 p-2"
                                 onClick={() => {
                                     setValue("userId", user.id);
                                     setSearchQuery(user.name);
@@ -119,24 +119,26 @@ export function CreateOrderForm({ onClose }: { onClose: () => void }) {
                     </ul>
                 )}
 
-                <Button
-                    type="button"
-                    onClick={() => setIsCreatingUser(true)}
-                    variant="outline"
-                    className="mt-4"
-                >
-                    Criar Novo Usuário
-                </Button>
+                <div className="flex flex-col">
+                    <Button
+                        type="button"
+                        onClick={() => setIsCreatingUser(true)}
+                        variant="outline"
+                        className="mt-4"
+                    >
+                        Criar Novo Usuário
+                    </Button>
 
-                <Button
-                    type="button"
-                    onClick={() => setIsItemFormOpen(true)}
-                    variant="outline"
-                    className="mt-2 bg-red"
-                    disabled={!selectedUserId}
-                >
-                    Escolher itens
-                </Button>
+                    <Button
+                        type="button"
+                        onClick={() => setIsItemFormOpen(true)}
+                        variant="outline"
+                        className="mt-2 bg-yellow hover:bg-red "
+                        disabled={!selectedUserId}
+                    >
+                        Escolher itens
+                    </Button>
+                </div>
 
                 <DialogCustom isOpen={isCreatingUser} onOpenChange={setIsCreatingUser}>
                     <CreateUserForm onClose={() => setIsCreatingUser(false)} />
