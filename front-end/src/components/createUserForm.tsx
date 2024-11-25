@@ -52,7 +52,7 @@ export function CreateUserForm({ onClose }: { onClose: () => void}) {
                     form.setError("email", { type: "manual", message: errorMessage });
                 }
             } else {
-                console.error("Error ao criar o usuário:", error);
+                console.error("Error ao criar o cliente:", error);
             }
         }
     }

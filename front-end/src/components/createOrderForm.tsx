@@ -78,7 +78,7 @@ export function CreateOrderForm({ onClose }: { onClose: () => void }) {
                     name="userId"
                     render={() => (
                         <FormItem>
-                            <FormLabel>Selecionar Usuário</FormLabel>
+                            <FormLabel>Selecionar Cliente</FormLabel>
                             <FormControl>
                                 <Input
                                     type="text"
@@ -95,7 +95,7 @@ export function CreateOrderForm({ onClose }: { onClose: () => void }) {
                                 Pesquisar
                             </Button>
                             <FormDescription>
-                                Escolha um usuário já existente ou crie um novo.
+                                Escolha um cliente já existente ou crie um novo.
                             </FormDescription>
                         </FormItem>
                     )}
