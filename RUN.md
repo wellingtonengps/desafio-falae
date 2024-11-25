@@ -35,4 +35,10 @@ As imagens são estão no front, não usei uma url da internet para facilitar
 }
 
 Em alguns momentos vão ser necessário atualizar a tela, 
-pois acabei não fazendo o refresh
+pois acabei não fazendo o refresh.
+
+As ações que esta presente em cada linha não foram implementadas. As rotas
+já estao prontas para ser implementadas, faltando apenas o front.
+
+link do postman para testar as rotas:
+https://winter-resonance-425711.postman.co/workspace/My-Workspace~b855f837-c63c-4708-8bea-af557bd462c8/collection/22374523-971305dc-f21e-4b2e-a132-42df94db93ef?action=share&creator=22374523
