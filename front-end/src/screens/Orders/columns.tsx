@@ -12,14 +12,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {Button} from "@/components/ui/button.tsx";
-import {deleteOrder, updateOrder} from "@/services/api.ts";
-import {OrderResponse} from "@/services/OrdersServices.ts";
+import {OrderResponse, orderService} from "@/services/OrdersServices.ts";
 
 
 export const columns: ColumnDef<OrderResponse>[] = [
     {
         accessorKey: "id",
-        header: "Código"
+        header: "Código",
+        cell: (info) => info.getValue(),
     },
     {
         accessorKey: "user",
@@ -27,6 +27,10 @@ export const columns: ColumnDef<OrderResponse>[] = [
         cell: ({ row }) => {
             const user = row.getValue("user") as { name: string };
             return <div>{user.name}</div>;
+        },
+        filterFn: (row, columnId, filterValue) => {
+            const user = row.getValue(columnId) as { name: string };
+            return user.name.toLowerCase().includes(filterValue.toLowerCase());
         },
     },
     {
@@ -113,27 +117,30 @@ export const columns: ColumnDef<OrderResponse>[] = [
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Status</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => {
-                                updateOrder(row.getValue("id"), {
-                                    status: "Pendente"
+                            onClick={async () => {
+                                await orderService.updateOrder({
+                                    id: row.getValue("id"),
+                                    status: "Pendente",
                                 })
                             }}
                         >
                             Pendente
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => {
-                                updateOrder(row.getValue("id"), {
-                                    status: "Em preparo"
+                            onClick={async  () => {
+                                await orderService.updateOrder({
+                                    id: row.getValue("id"),
+                                    status: "Em preparo",
                                 })
                             }}
                         >
                             Em preparo
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => {
-                                updateOrder(row.getValue("id"), {
-                                    status: "Entregue"
+                            onClick={async () => {
+                                await orderService.updateOrder({
+                                    id: row.getValue("id"),
+                                    status: "Entregue",
                                 })
                             }}
                         >

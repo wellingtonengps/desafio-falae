@@ -43,7 +43,7 @@ export function CreateUserForm({ onClose }: { onClose: () => void}) {
     async function onSubmit(values: UserRequest) {
         try {
             await userService.createUser(values);
-            onClose();
+            onClose( );
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
                 const errorMessage = error.response.data?.error;

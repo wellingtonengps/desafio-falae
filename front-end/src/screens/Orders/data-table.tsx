@@ -1,5 +1,3 @@
-"use client"
-
 import {
     ColumnDef,
     SortingState,
@@ -9,6 +7,7 @@ import {
     useReactTable,
     ColumnFiltersState,
     getFilteredRowModel,
+    getPaginationRowModel,
 } from "@tanstack/react-table"
 
 
@@ -21,7 +20,8 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import React from "react";
-import {Input} from "@/components/ui/input.tsx";
+import { Input } from "@/components/ui/input"
+import {Button} from "@/components/ui/button.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -33,10 +33,13 @@ export function DataTable<TData, TValue>({
                                              data,
                                          }: DataTableProps<TData, TValue>) {
 
-    const [sorting, setSorting] = React.useState<SortingState>([])
+    const [sorting, setSorting] = React.useState<SortingState>([
+        { id: "createdAt", desc: true }
+    ])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
     )
+
 
     const table = useReactTable({
         data,
@@ -46,6 +49,7 @@ export function DataTable<TData, TValue>({
         getSortedRowModel: getSortedRowModel(),
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         state: {
             sorting,
             columnFilters,
@@ -56,7 +60,7 @@ export function DataTable<TData, TValue>({
         <div>
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Buscar cliente..."
+                    placeholder="Busque pelo cliente..."
                     value={(table.getColumn("user")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("user")?.setFilterValue(event.target.value)
@@ -107,6 +111,24 @@ export function DataTable<TData, TValue>({
                         )}
                     </TableBody>
                 </Table>
+            </div>
+            <div className="flex items-center justify-end space-x-2 py-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    Anterior
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                >
+                    Próxima
+                </Button>
             </div>
         </div>
 

@@ -4,7 +4,6 @@ import React, {useEffect, useState} from "react";
 import { Button } from "@/components/ui/button"
 
 import {DialogCustom} from "@/components/dialogCustom.tsx";
-import {CreateUserForm} from "@/components/createUserForm.tsx";
 import {OrderResponse, orderService} from "@/services/OrdersServices.ts";
 import {CreateOrderForm} from "@/components/createOrderForm.tsx";
 
@@ -38,10 +37,10 @@ function Orders() {
     return (
         <div className="container mx-auto py-10">
             <div className="flex py-4 justify-start">
-                <Button className="ml-10 bg-red" variant="outline" onClick={() => setIsModalOpen(true)}>Criar pedido</Button>
+                <Button className="bg-red" variant="outline" onClick={() => setIsModalOpen(true)}>Criar pedido</Button>
             </div>
             <DataTable columns={columns} data={data}/>
-            <DialogCustom isOpen={isModalOpen} onOpenChange={setIsModalOpen} title="Criar usuário">
+            <DialogCustom isOpen={isModalOpen} onOpenChange={setIsModalOpen}>
                 <CreateOrderForm onClose={() => setIsModalOpen(false)}/>
             </DialogCustom>
         </div>
